@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sri-lakshmi-tirupatamma-flour-mill.netlify.app/sitemap.xml
