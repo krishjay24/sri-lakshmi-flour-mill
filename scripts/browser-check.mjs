@@ -28,7 +28,7 @@ function send(method, params = {}) {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function evalJS(expression) {
   const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
+  if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
   return result.result.value;
 }
 async function navigate(path) {
@@ -41,9 +41,15 @@ const widths = [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
 const failures = [];
 for (const width of widths) {
   await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: true });
-  for (const path of ['/', '/about', '/products', '/services', '/contact', '/privacy', '/missing-page']) {
+  for (const path of ['/', '/about', '/products', '/services', '/contact', '/privacy', '/credits', '/missing-page']) {
     await navigate(path);
-    const state = await evalJS('({width:innerWidth,scroll:document.documentElement.scrollWidth,h1:!!document.querySelector("h1"),menu:!!document.querySelector("#site-menu-button")})');
+    let state;
+    try {
+      state = await evalJS('({width:innerWidth,scroll:document.documentElement.scrollWidth,h1:!!document.querySelector("h1"),menu:!!document.querySelector("#site-menu-button")})');
+    } catch (error) {
+      console.error(`Browser check failed at ${width}px ${path}:`, error);
+      throw error;
+    }
     if (state.scroll > state.width || !state.h1) failures.push({ width, path, ...state });
     if (width === 375 && path === '/') {
       const image = await send('Page.captureScreenshot', { format: 'png' });
@@ -57,11 +63,23 @@ for (const width of widths) {
       if (closed !== 'false') failures.push({ width, path, menu: 'did not close on Escape' });
     }
     if (width === 375 && path === '/products') {
+      await evalJS('window.scrollTo({top:850,behavior:"instant"})');
+      await sleep(150);
       const image = await send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(process.env.TEMP + '/flour-products-375-qa.png', Buffer.from(image.data, 'base64'));
+      const firstProduct = await evalJS('({photo:document.querySelector(".catalog-card img").classList.contains("catalog-stock-photo"),loaded:document.querySelector(".catalog-card img").naturalWidth>0})');
+      if (!firstProduct.loaded || !firstProduct.photo) failures.push({ width, path, firstProduct });
+      const productImages = await evalJS('Promise.all([...document.querySelectorAll(".catalog-card img")].map(async (img) => { img.loading = "eager"; try { await img.decode(); return img.naturalWidth > 0; } catch { return false; } })).then((results) => results.every(Boolean) && results.length === 6)');
+      if (!productImages) failures.push({ width, path, productImages: 'one or more photos failed to load' });
       await navigate('/products?search=rice');
       const search = await evalJS('document.querySelector("#product-search").value');
       if (search !== 'rice') failures.push({ width, path, search });
+    }
+    if (width === 1440 && path === '/products') {
+      await evalJS('window.scrollTo({top:700,behavior:"instant"})');
+      await sleep(150);
+      const image = await send('Page.captureScreenshot', { format: 'png' });
+      writeFileSync(process.env.TEMP + '/flour-products-1440-qa.png', Buffer.from(image.data, 'base64'));
     }
     if (width === 375 && path === '/contact') {
       const image = await send('Page.captureScreenshot', { format: 'png' });
@@ -96,7 +114,7 @@ for (const width of widths) {
     }
   }
 }
-console.log(`Checked ${widths.length} widths x 7 routes, menu Escape and URL search.`);
+console.log(`Checked ${widths.length} widths x 8 routes, menu Escape and URL search.`);
 console.log(failures.length ? JSON.stringify(failures, null, 2) : 'No missing headings, horizontal overflow or interaction failures.');
 console.log(`${browserErrors.length} browser console/exception errors.`, browserErrors.slice(0, 5));
 socket.close();

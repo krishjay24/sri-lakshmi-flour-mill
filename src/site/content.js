@@ -1,5 +1,9 @@
 import flour from '../assets/images/hero-flour.png';
 import chilli from '../assets/images/chilli-powder.png';
+import riceFlour from '../assets/images/rice-flour-stock.jpg';
+import riceGrains from '../assets/images/rice-stock.jpg';
+import besan from '../assets/images/besan-stock.jpg';
+import turmeric from '../assets/images/turmeric-stock.jpg';
 import { products as sourceProducts, services as sourceServices } from '../data/catalog';
 
 // Catalogue names/categories come from the existing site. Details and availability
@@ -13,11 +17,21 @@ const descriptions = {
   'turmeric-powder': 'Ground turmeric for everyday cooking.',
 };
 
+const productImages = {
+  'rice-flour': [riceFlour, 'Representative photograph of rice flour with a scoop'],
+  'chilli-powder': [chilli, 'Illustration of ground chilli and dried chillies'],
+  'premium-rice': [riceGrains, 'Representative photograph of uncooked rice grains in a bowl'],
+  'wheat-flour': [flour, 'Illustration of wheat grains and flour'],
+  besan: [besan, 'Representative photograph of gram flour on a plate'],
+  'turmeric-powder': [turmeric, 'Representative photograph of turmeric powder and a wooden spoon'],
+};
+
 export const products = sourceProducts.map(({ id, slug, name, category, categoryLabel }) => ({
   id, slug, name, category, categoryLabel,
   description: descriptions[slug],
-  image: slug === 'chilli-powder' ? chilli : slug === 'wheat-flour' ? flour : null,
-  imageAlt: slug === 'chilli-powder' ? 'Illustration of ground chilli' : slug === 'wheat-flour' ? 'Illustration of wheat grains and flour' : '',
+  image: productImages[slug][0],
+  imageAlt: productImages[slug][1],
+  stockPhoto: !['chilli-powder', 'wheat-flour'].includes(slug),
 }));
 
 export const categories = [

@@ -3,9 +3,10 @@ import { EnquiryLink } from './Layout';
 export function ProductCard({ product }) {
   return <article className="catalog-card">
     <div className={`catalog-image catalog-image--${product.category}`}>
-      {product.image ? <img src={product.image} alt={product.imageAlt} loading="lazy" /> : <span aria-hidden="true" className="placeholder-mark">SL</span>}
+      <img className={product.stockPhoto ? 'catalog-stock-photo' : undefined} src={product.image} alt={product.imageAlt} loading="lazy" />
     </div>
     <div className="catalog-body"><span className="eyebrow">{product.categoryLabel}</span><h3>{product.name}</h3><p>{product.description}</p>
+      {product.stockPhoto && <small className="catalog-photo-note">Representative ingredient photo</small>}
       <EnquiryLink subject={product.name} className="text-link">Ask about this product <span aria-hidden="true">↗</span></EnquiryLink>
     </div>
   </article>;

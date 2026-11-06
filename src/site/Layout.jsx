@@ -63,7 +63,7 @@ export function Header() {
 export function Footer() {
   return <footer className="site-footer"><div className="container footer-grid">
     <div><span className="eyebrow">FROM GRAIN TO TABLE</span><h2>{business.businessName}</h2><p>Explore our flour, spice and rice products, or ask about grinding your own ingredients.</p></div>
-    <div><h3>Explore</h3>{links.map(([path, label]) => <Link key={path} to={path}>{label}</Link>)}<Link to="/privacy">Privacy policy</Link></div>
+    <div><h3>Explore</h3>{links.map(([path, label]) => <Link key={path} to={path}>{label}</Link>)}<Link to="/privacy">Privacy policy</Link><Link to="/credits">Photo credits</Link></div>
     <div><h3>What we offer</h3><Link to="/products?category=flours">Flour products</Link><Link to="/products?category=spices">Spice products</Link><Link to="/products?category=grains">Rice products</Link><Link to="/services">Custom grinding</Link></div>
     <div><h3>Get in touch</h3><p>Have a question about a product or service?</p><Link className="footer-contact" to="/contact">Send an enquiry ↗</Link>{whatsappUrl() && <a href={whatsappUrl(enquiryMessage('your products and services'))} target="_blank" rel="noopener noreferrer">WhatsApp {business.whatsappNumber}</a>}{business.phone && <a href={`tel:${business.phone}`}>Call {business.phone}</a>}{business.address && <p>{business.address}</p>}</div>
   </div><div className="container footer-bottom"><span>© {new Date().getFullYear()} {business.businessName}</span><span>Made for good food, every day.</span></div></footer>;

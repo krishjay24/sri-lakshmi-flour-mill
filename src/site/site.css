@@ -16,3 +16,5 @@
 @media(max-width:380px){.brand strong{max-width:138px}.button-row .button{width:100%}.catalog-toolbar{display:block}.catalog-toolbar>span{display:block;padding:10px 0}.footer-grid{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .catalog-image img{object-fit:contain;padding:14px}
+.catalog-image .catalog-stock-photo{object-fit:cover;padding:0}
+.catalog-photo-note{display:block;font-size:.7rem;color:var(--muted);margin-top:8px}

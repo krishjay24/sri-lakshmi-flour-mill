@@ -5,7 +5,7 @@ import About from './site/About';
 import Products from './site/Products';
 import Services from './site/Services';
 import Contact from './site/Contact';
-import { Privacy, NotFound } from './site/OtherPages';
+import { Privacy, PhotoCredits, NotFound } from './site/OtherPages';
 import './site/site.css';
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/credits" element={<PhotoCredits />} />
           <Route path="*" element={<NotFound />} />
         </Routes></div>
         <Footer />
